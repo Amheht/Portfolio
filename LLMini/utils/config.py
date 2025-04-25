@@ -1,0 +1,11 @@
+# utils/config.py
+
+# === Training values ===
+VOCAB_SIZE = 8192
+CONTEXT_SIZE = 64
+EMBED_DIM = 256
+NUM_HEADS = 4
+NUM_LAYERS = 4
+FFN_DIM = 1024
+BATCH_SIZE = 32
+EPOCHS = 10

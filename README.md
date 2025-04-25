@@ -15,7 +15,7 @@ Thank you for taking the time to view my portfolio. If you have any questions, p
 
 ## Projects
 
-### 1. [LLMini — Miniature GPT-Style Language Model](./Portfolio/LLMini)
+### 1. [LLMini — Miniature GPT-Style Language Model](/LLMini)
 
 **Summary:**
 A lightweight Transformer-based language model (similar to GPT) built from scratch using TensorFlow and Huggingface Tokenizers.

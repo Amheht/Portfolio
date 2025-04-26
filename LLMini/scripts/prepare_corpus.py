@@ -65,16 +65,42 @@ def clean_gutenberg_text(file_path: str) -> str:
     
     text = ''.join(lines[start:end])
 
-
+    # Fix any unicode artefacts.
+    text = fix_unicode(text)
+    
     # Remove lines that are mostly special chars.
     text = re.sub(r'^[\s\*\-_=]{3,}$', '', text, flags=re.MULTILINE)
 
     # Remove excessive newlines.
-    text = re.sub(r'\n{3,}', '\n\n')
+    text = re.sub(r'\n{3,}', '\n\n', text)
     
     # Remove any trailing whitespace
     text = text.strip()
 
+    return text
+	
+def fix_unicode(text: str) -> str:
+    """
+    Fix common Unicode artifacts from poorly encoded sources.
+    
+    Args:
+        text: String to fix.
+    
+    Returns:
+        Cleaned text with corrected Unicode characters.
+    """
+    replacements = {
+        "â€”": "—",  # em dash
+        "â€“": "–",  # en dash
+        "â€˜": "‘",  # left single quote
+        "â€™": "’",  # right single quote
+        "â€œ": "“",  # left double quote
+        "â€�": "”", # right double quote
+        "â€¦": "…",  # ellipsis
+        "Â ": "",    # stray non-breaking space
+    }
+    for wrong, right in replacements.items():
+        text = text.replace(wrong, right)
     return text
 
 def merge_books(input_dir: Path, output_file: Path) -> None:

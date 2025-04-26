@@ -36,7 +36,7 @@ def get_books(input_dir: Path, books: List[Tuple[str, str]]) -> None:
             print(f"   {name} already exists. Skipping download.")
             continue
         print(f"   Downloading {name}...", end='')
-        urllib.request.urlretrieve(url, os.path.join(output_file, name))
+        urllib.request.urlretrieve(url, dest_path)
         print("Done")
     print("Book downloads complete.")
 

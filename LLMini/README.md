@@ -10,9 +10,8 @@ This project demonstrates:
 - Training a language model end-to-end
 - Text generation via sampling
 
-Designed as a demonstration of deep learning and AI engineering skills.
 
----
+
 
 ## Project Structure
 
@@ -27,14 +26,10 @@ Designed as a demonstration of deep learning and AI engineering skills.
 | `data/` | Input texts and cleaned corpus |
 | `checkpoints/` | Saved model weights |
 
----
+
 
 ## How to Run
 
-
 ### Open in Colab
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Amheht/Portfolio/LLMini/blob/main/miniGPT.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Amheht/Portfolio/blob/main/LLMini/LLMini_colab.ipynb)
 
-### OR 1. Prepare Corpus
-```bash
-python scripts/prepare_corpus.py

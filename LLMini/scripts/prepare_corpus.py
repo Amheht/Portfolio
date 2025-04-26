@@ -1,5 +1,7 @@
-# scripts/prepare_corpus.py
+# utils/prepare_corpus.py
+
 import os
+import re
 import urllib.request
 from pathlib import Path
 from typing import List, Tuple
@@ -23,6 +25,10 @@ books = [
 ]
 
 def get_books(input_dir: Path, books: List[Tuple[str, str]]) -> None:
+    """
+    Downloads books from Project Gutenberg if they are not already present.
+    """
+
     input_dir.mkdir(parents=True, exist_ok=True)
     for name, url in books:
         dest_path = input_dir / name
@@ -30,31 +36,52 @@ def get_books(input_dir: Path, books: List[Tuple[str, str]]) -> None:
             print(f"   {name} already exists. Skipping download.")
             continue
         print(f"   Downloading {name}...", end='')
-        urllib.request.urlretrieve(url, str(dest_path))
+        urllib.request.urlretrieve(url, os.path.join(output_file, name))
         print("Done")
     print("Book downloads complete.")
 
 def clean_gutenberg_text(file_path: str) -> str:
     """
-    Removes Project Gutenberg headers and footers from the given file.
+    Cleans up Project Gutenberg etexts for use from the given file.
     
     Args:
         file_path: the books location on the disk.
+
+    Returns:
+        A cleaned text string.
     """
+
     with open(file_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
+
     start = 0
     end = len(lines)
     for i, line in enumerate(lines):
-        if '*** START OF THIS PROJECT GUTENBERG EBOOK' in line:
+        if '*** START OF THE PROJECT GUTENBERG EBOOK' in line:
             start = i + 1
-        elif '*** END OF THIS PROJECT GUTENBERG EBOOK' in line:
+        elif '*** END OF THE PROJECT GUTENBERG EBOOK' in line:
             end = i
             break
     
-    return ''.join(lines[start:end]).strip()
+    text = ''.join(lines[start:end])
+
+
+    # Remove lines that are mostly special chars.
+    text = re.sub(r'^[\s\*\-_=]{3,}$', '', text, flags=re.MULTILINE)
+
+    # Remove excessive newlines.
+    text = re.sub(r'\n{3,}', '\n\n')
+    
+    # Remove any trailing whitespace
+    text = text.strip()
+
+    return text
 
 def merge_books(input_dir: Path, output_file: Path) -> None:
+    """
+    Cleans and merges all book files into a single corpus file.
+    """
+
     output_file.parent.mkdir(parents=True, exist_ok=True)
     book_files = sorted(input_dir.glob("*.txt"))
 

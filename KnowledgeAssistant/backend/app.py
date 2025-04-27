@@ -1,6 +1,10 @@
 # backend/app.py
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from backend.openai_utils import get_embedding
+from backend.db import save_document
+
 
 # Create FastAPI app
 app = FastAPI(
@@ -19,3 +23,27 @@ async def health_check():
 @app.get("/")
 async def root():
      return {"message": "Welcome to the Knowledge Assistant API!"}
+
+
+# Upload Document Endpoint
+class UploadDocumentRequest(BaseModel):
+    content: str
+
+
+@app.post("/upload")
+async def upload_document(request: UploadDocumentRequest):
+    try:
+        # Get text from request.
+        content = request.content
+
+        # Create embedding from content.
+        embedding = get_embedding(content)
+
+        # Save document and embedding to storage.
+        save_document(content, embedding) 
+
+        # Return success.
+        return {"message": "Document upload successfully!"}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload document: {str(e)}")

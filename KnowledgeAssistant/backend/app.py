@@ -1,19 +1,21 @@
 # backend/app.py
 
+from backend.db import init_db, save_document, get_all_documents
+from backend.openai_utils import get_embedding, generate_answer
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
-from backend.openai_utils import get_embedding, generate_answer
-from backend.db import save_document, get_all_documents
 
+# Initialize Database
+if not init_db():
+    raise Exception("Database initialization failed. Cannot start server.")
 
-# === Create FastAPI app ===
+# Create FastAPI app
 app = FastAPI(
     title="Knowledge Assistant API",
     description="An internal knowledge assistant powered by OpenAI",
     version="0.1.0"
 )
-
 
 # === Health Check Endpoint ===
 @app.get("/health")
@@ -25,11 +27,9 @@ async def health_check():
 async def root():
      return {"message": "Welcome to the Knowledge Assistant API!"}
 
-
 # === Upload Document Endpoint ===
 class UploadDocumentRequest(BaseModel):
     content: str
-
 
 @app.post("/upload")
 async def upload_document(request: UploadDocumentRequest):
@@ -59,17 +59,23 @@ async def ask_question(request: AskQuestionRequest):
     try:
         question = request.question
 
+        # Create embedding for question
         question_embedding = get_embedding(question)
 
+        # Get the documents from the database
         documents = get_all_documents()
-
         if not documents:
             raise HTTPException(status_code=404, detail="No reference documents found for answering questions.")
         
+        # Find the most similar document
         best_doc = find_most_similar_document(question_embedding, documents)
-
+        if best_doc is None:
+            raise HTTPException(status_code=404, detail="No similar document found.")
+        
+        # Create the prompt
         prompt = f"Use the following document to answer the question. \n\nDocument:\n{best_doc['content']}\n\nQuestion:\n{question}"
 
+        # Generate the answer
         answer = generate_answer(prompt)
 
         return {"answer": answer}
@@ -77,7 +83,6 @@ async def ask_question(request: AskQuestionRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to answer question: {str(e)}")
     
-
 # === Helper Function: Cosine Similarity ===
 def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
     """ 
@@ -111,12 +116,16 @@ def find_most_similar_document(question_embedding: List[float], documents: List[
     Return: The document most similar to the question.
     """
 
+    SIMULARITY_SCORE_THRESHOLD = 0.5
     best_score = -1
     best_doc = None
-    for doc in documents:
+    for i, doc in enumerate(documents):
         score = cosine_similarity(question_embedding, doc["embedding"])
         if score > best_score:
             best_score = score
             best_doc = doc
 
+    if best_score < SIMULARITY_SCORE_THRESHOLD:
+        return None
+    
     return best_doc

@@ -7,3 +7,6 @@ __pycache__/
 
 # Ignore dotenv secrets
 .env
+
+# Ignore database
+*.db

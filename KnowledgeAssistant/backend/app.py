@@ -110,13 +110,13 @@ def find_most_similar_document(question_embedding: List[float], documents: List[
 
     Return: The document most similar to the question.
     """
-    
+
     best_score = -1
     best_doc = None
     for doc in documents:
         score = cosine_similarity(question_embedding, doc["embedding"])
         if score > best_score:
             best_score = score
-            best_doct = doc
+            best_doc = doc
 
     return best_doc

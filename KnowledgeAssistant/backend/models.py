@@ -12,3 +12,7 @@ class RegisterRequest(BaseModel):
 
 class AskQuestionRequest(BaseModel):
     question: str
+
+class LoginRequest(BaseModel):
+    username: str = Field(..., example="your_username")
+    password: str = Field(..., example="your_password")

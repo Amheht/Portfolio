@@ -1,9 +1,11 @@
 # backend/routers/knowledge.py
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional, Tuple
+
 from backend.db import get_all_documents, save_document
 from backend.models import AskQuestionRequest, UploadDocumentRequest
+from backend.auth_utils import get_current_user
 from backend.openai_utils import get_embedding, generate_answer
 
 knowledge_router = APIRouter(prefix="/knowledge", tags=["knowledge"])
@@ -13,13 +15,15 @@ MINIMUM_CONTENT_LENGTH = 20
 
 # === Upload Document Endpoint ===
 @knowledge_router.post("/upload")
-async def upload_document(request: UploadDocumentRequest):
+async def upload_document(request: UploadDocumentRequest, username: str = Depends(get_current_user)):
     try:
         # Get text from request.
         content = request.content
 
         # Create embedding from content.
         embedding = get_embedding(content)
+
+        # TODO: Attach username to document uploads.
 
         # Save document and embedding to storage.
         save_document(content, embedding) 
@@ -33,13 +37,14 @@ async def upload_document(request: UploadDocumentRequest):
 
 # === Add Question Endpoint ===
 @knowledge_router.post("/ask-question")
-async def ask_question(request: AskQuestionRequest):
+async def ask_question(request: AskQuestionRequest, username: str = Depends(get_current_user)):
     try:
         question = request.question
 
         # Create embedding for question
         question_embedding = get_embedding(question)
 
+        # TODO: filter docs by username and access.
         # Get the documents from the database
         documents = get_all_documents()
         if not documents:
@@ -54,10 +59,8 @@ async def ask_question(request: AskQuestionRequest):
         if not best_doc.get('content') or len(best_doc['content'].strip()) < MINIMUM_CONTENT_LENGTH:
             return {"answer": "It doesn't appear that I can find a suitable document to answer your question."}
 
-        # Create the prompt
+        # Create the prompt and generate answer
         prompt = f"Use the following document to answer the question. \n\nDocument:\n{best_doc['content']}\n\nQuestion:\n{question}"
-
-        # Generate the answer
         answer = generate_answer(prompt)
 
         # Response with answer

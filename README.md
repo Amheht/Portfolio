@@ -12,7 +12,6 @@ Thank you for taking the time to view my portfolio. If you have any questions, p
 - All codebases are original unless otherwise noted.
 
 
-
 ## Projects
 
 ### 1. [LLMini — Miniature GPT-Style Language Model](/LLMini)
@@ -29,19 +28,42 @@ Trained on a curated corpus of classic literature from Project Gutenberg.
 - Modular design for scalability
 
 **Technologies:**  
-TensorFlow, Python, Huggingface Tokenizers
+- TensorFlow
+- Python
+- Huggingface Tokenizers
 
 **Links:**
 - [Project Repository](./LLMini)
 - [Open in Google Colab](https://colab.research.google.com/github/Amheht/Portfolio/blob/main/LLMini/colab_notebook.ipynb)
 
+### 2. [KnowledgeAssistant — API](/KnowledgeAssistant)
+
+**Summary:**
+A lightweight internal knowledge assistant powered by OpenAI and FastAPI.
+
+**Key Features:**
+- User registration and login system (bcrypt + JWT)
+- Secure token-based authentication
+- Upload internal documents for knowledge storage
+- Ask questions against uploaded documents (semantic search)
+- Document embeddings powered by OpenAI
+- Modular, production-grade backend structure
+
+**Technologies:**  
+- Python 3.12
+- FastAPI (backend API framework)
+- SQLite (lightweight database for storage)
+- bcrypt (password hashing)
+- JWT (token authentication)
+- OpenAI API (embeddings and answer generation)
+
+**Links:**
+- [Project Repository](./KnowledgeAssistant)
 
 
 ## Contact
 
 - GitHub: [Amheht](https://github.com/Amheht)
-
-
 
 ## License
 

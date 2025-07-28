@@ -60,21 +60,6 @@ A lightweight internal knowledge assistant powered by OpenAI and FastAPI.
 **Links:**
 - [Project Repository](./KnowledgeAssistant)
 
-### 3. NOCI
-
-**Summary:**
-TBD
-
-**Key Features:**
-- TBD
-
-**Technologies:**  
-- TBD
-
-**Links:**
-- TBD
-
-  
 ## Contact
 
 - GitHub: [Amheht](https://github.com/Amheht)
